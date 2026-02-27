@@ -337,6 +337,13 @@ document.addEventListener("DOMContentLoaded", () => {
     cancelAnnouncementEditButton.classList.remove("hidden");
   }
 
+  function escapeHtml(text) {
+    if (!text) return "";
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
   function renderAnnouncementBanner(announcements) {
     if (!announcements.length) {
       announcementBanner.innerHTML =
@@ -347,7 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
     announcementBanner.innerHTML = announcements
       .map(
         (announcement) =>
-          `<article class="announcement-item"><span class="announcement-icon" aria-hidden="true">📢</span><span>${announcement.message}</span></article>`
+          `<article class="announcement-item"><span class="announcement-icon" aria-hidden="true">📢</span><span>${escapeHtml(announcement.message)}</span></article>`
       )
       .join("");
   }
@@ -380,7 +387,7 @@ document.addEventListener("DOMContentLoaded", () => {
         (announcement) => `
           <article class="announcement-row" data-id="${announcement.id}">
             <div class="announcement-row-content">
-              <p>${announcement.message}</p>
+              <p>${escapeHtml(announcement.message)}</p>
               <div class="announcement-row-meta">
                 <span><strong>Start:</strong> ${formatAnnouncementDate(
                   announcement.start_date
