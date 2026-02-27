@@ -433,7 +433,8 @@ button {
 }
 
 .close-modal,
-.close-login-modal {
+.close-login-modal,
+.close-announcements-modal {
   position: absolute;
   right: 12px;
   top: 8px;
@@ -441,6 +442,58 @@ button {
   cursor: pointer;
   color: var(--text-secondary);
   line-height: 1;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.form-group label {
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group textarea {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  background-color: var(--surface);
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 2px rgba(83, 75, 174, 0.1);
+}
+
+.message {
+  margin-top: 12px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.message.success {
+  background-color: var(--success-light);
+  color: var(--success);
+}
+
+.message.error {
+  background-color: var(--error-light);
+  color: var(--error);
+}
+
+.message.info {
+  background-color: var(--info-light);
+  color: var(--info);
 }
 
 /* Login modal specific styling */
@@ -622,6 +675,7 @@ footer {
 #user-status {
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 
 #user-info {
@@ -666,11 +720,110 @@ footer {
 }
 
 .announcement-banner {
-  background-color: var(--success);
-  color: white;
-  text-align: center;
-  padding: 15px;
-  font-weight: bold;
+  background-color: var(--success-light);
+  color: var(--success);
+  border: 1px solid var(--success);
+  border-radius: 6px;
+  text-align: left;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.announcement-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 0.85rem;
+}
+
+.announcement-icon {
+  line-height: 1.2;
+}
+
+.announcement-empty {
+  font-size: 0.85rem;
+}
+
+.announcements-modal-content {
+  max-width: 760px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.announcement-date-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.announcement-form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.secondary-button {
+  background-color: var(--background);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.secondary-button:hover {
+  background-color: var(--border-light);
+}
+
+.announcements-list {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.announcement-row {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: var(--background);
+}
+
+.announcement-row-content p {
+  margin-bottom: 8px;
+}
+
+.announcement-row-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+.announcement-row-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.announcement-delete {
+  background-color: var(--error);
+}
+
+.announcement-delete:hover {
+  background-color: var(--secondary-dark);
+}
+
+.announcement-empty-list {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  border: 1px dashed var(--border);
+  padding: 12px;
+  border-radius: 6px;
 }
 
 @media (max-width: 767px) {
@@ -678,5 +831,18 @@ footer {
     padding: 10px;
     font-size: 0.9rem;
   }
-  border-radius: 5px;
+
+  .announcement-row-actions {
+    justify-content: stretch;
+  }
+
+  .announcement-row-actions button {
+    flex: 1;
+  }
+}
+
+@media (min-width: 768px) {
+  .announcement-date-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
