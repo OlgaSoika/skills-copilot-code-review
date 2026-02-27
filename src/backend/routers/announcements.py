@@ -12,77 +12,77 @@ from pydantic import BaseModel, Field
 from ..database import announcements_collection, teachers_collection
 
 router = APIRouter(
-	prefix="/announcements",
-	tags=["announcements"]
+    prefix="/announcements",
+    tags=["announcements"]
 )
 
 
 class AnnouncementUpsert(BaseModel):
-	message: str = Field(..., min_length=1, max_length=500)
-	expiration_date: str
-	start_date: Optional[str] = None
+    message: str = Field(..., min_length=1, max_length=500)
+    expiration_date: str
+    start_date: Optional[str] = None
 
 
 def _parse_iso_date(value: Optional[str], field_name: str, required: bool = False) -> Optional[datetime]:
-	if value is None:
-		if required:
-			raise HTTPException(status_code=400, detail=f"{field_name} is required")
-		return None
+    if value is None:
+        if required:
+            raise HTTPException(status_code=400, detail=f"{field_name} is required")
+        return None
 
-	try:
-		parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
-		if parsed.tzinfo is None:
-			parsed = parsed.replace(tzinfo=timezone.utc)
-		return parsed
-	except ValueError:
-		raise HTTPException(status_code=400, detail=f"{field_name} must be a valid ISO date")
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        return parsed
+    except ValueError:
+        raise HTTPException(status_code=400, detail=f"{field_name} must be a valid ISO date")
 
 
 def _serialize(doc: Dict[str, Any]) -> Dict[str, Any]:
-	return {
-		"id": doc["_id"],
-		"message": doc["message"],
-		"start_date": doc.get("start_date"),
-		"expiration_date": doc["expiration_date"],
-		"created_at": doc.get("created_at")
-	}
+    return {
+        "id": doc["_id"],
+        "message": doc["message"],
+        "start_date": doc.get("start_date"),
+        "expiration_date": doc["expiration_date"],
+        "created_at": doc.get("created_at")
+    }
 
 
 def _validate_teacher(teacher_username: str) -> None:
-	teacher = teachers_collection.find_one({"_id": teacher_username})
-	if not teacher:
-		raise HTTPException(status_code=401, detail="Invalid teacher credentials")
+    teacher = teachers_collection.find_one({"_id": teacher_username})
+    if not teacher:
+        raise HTTPException(status_code=401, detail="Invalid teacher credentials")
 
 
 @router.get("", response_model=List[Dict[str, Any]])
 @router.get("/", response_model=List[Dict[str, Any]])
 def get_active_announcements() -> List[Dict[str, Any]]:
-	"""Get announcements active right now for public display."""
-	now = datetime.now(timezone.utc)
-	docs = announcements_collection.find().sort("created_at", -1)
+    """Get announcements active right now for public display."""
+    now = datetime.now(timezone.utc)
+    docs = announcements_collection.find().sort("created_at", -1)
 
-	active: List[Dict[str, Any]] = []
-	for doc in docs:
-		start_date = _parse_iso_date(doc.get("start_date"), "start_date", required=False)
-		expiration_date = _parse_iso_date(doc.get("expiration_date"), "expiration_date", required=True)
+    active: List[Dict[str, Any]] = []
+    for doc in docs:
+        start_date = _parse_iso_date(doc.get("start_date"), "start_date", required=False)
+        expiration_date = _parse_iso_date(doc.get("expiration_date"), "expiration_date", required=True)
 
-		if expiration_date < now:
-			continue
-		if start_date and start_date > now:
-			continue
+        if expiration_date < now:
+            continue
+        if start_date and start_date > now:
+            continue
 
-		active.append(_serialize(doc))
+        active.append(_serialize(doc))
 
-	return active
+    return active
 
 
 @router.get("/manage", response_model=List[Dict[str, Any]])
 def get_all_announcements(teacher_username: str = Query(...)) -> List[Dict[str, Any]]:
-	"""Get all announcements for authenticated management UI."""
-	_validate_teacher(teacher_username)
+    """Get all announcements for authenticated management UI."""
+    _validate_teacher(teacher_username)
 
-	docs = announcements_collection.find().sort("created_at", -1)
-	return [_serialize(doc) for doc in docs]
+    docs = announcements_collection.find().sort("created_at", -1)
+    return [_serialize(doc) for doc in docs]
 
 
 @router.post("", response_model=Dict[str, Any])
