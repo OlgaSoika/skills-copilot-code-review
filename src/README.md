@@ -32,6 +32,10 @@ A super simple FastAPI application that allows students to view and sign up for 
 
 ## API Endpoints
 
+> **Note:** This documentation covers all available endpoints. The activities and auth endpoints below were pre-existing but previously undocumented. The announcements endpoints are newly added.
+
+### Activities & Auth (Pre-existing)
+
 | Method | Endpoint                                                          | Description                                                         |
 | ------ | ----------------------------------------------------------------- | ------------------------------------------------------------------- |
 | GET    | `/activities`                                                     | Get all activities with their details and current participant count |
@@ -39,6 +43,11 @@ A super simple FastAPI application that allows students to view and sign up for 
 | POST   | `/activities/{activity_name}/unregister?email=student@mergington.edu` | Unregister a student from an activity                              |
 | POST   | `/auth/login?username={username}&password={password}`            | Sign in as a teacher or admin                                       |
 | GET    | `/auth/check-session?username={username}`                         | Validate a signed-in user                                           |
+
+### Announcements (New)
+
+| Method | Endpoint                                                          | Description                                                         |
+| ------ | ----------------------------------------------------------------- | ------------------------------------------------------------------- |
 | GET    | `/announcements`                                                  | Get active announcements for the public banner                      |
 | GET    | `/announcements/manage?teacher_username={username}`               | Get all announcements (authenticated users only)                    |
 | POST   | `/announcements?teacher_username={username}`                      | Create announcement (expiration date required)                      |
