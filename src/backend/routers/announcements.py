@@ -95,9 +95,13 @@ def create_announcement(payload: AnnouncementUpsert, teacher_username: str = Que
 	if start_date and start_date >= expiration_date:
 		raise HTTPException(status_code=400, detail="start_date must be before expiration_date")
 
+	message = payload.message.strip()
+	if not message:
+		raise HTTPException(status_code=400, detail="message must not be empty or contain only whitespace")
+
 	doc = {
 		"_id": str(uuid4()),
-		"message": payload.message.strip(),
+		"message": message,
 		"start_date": start_date.isoformat() if start_date else None,
 		"expiration_date": expiration_date.isoformat(),
 		"created_at": datetime.now(timezone.utc).isoformat()
@@ -124,8 +128,12 @@ def update_announcement(
 	if start_date and start_date >= expiration_date:
 		raise HTTPException(status_code=400, detail="start_date must be before expiration_date")
 
+	message = payload.message.strip()
+	if not message:
+		raise HTTPException(status_code=400, detail="message must not be empty or contain only whitespace")
+
 	updates = {
-		"message": payload.message.strip(),
+		"message": message,
 		"start_date": start_date.isoformat() if start_date else None,
 		"expiration_date": expiration_date.isoformat()
 	}
