@@ -5,6 +5,7 @@ MongoDB database configuration and setup for Mergington High School API
 from pymongo import MongoClient
 from argon2 import PasswordHasher, exceptions as argon2_exceptions
 import mongomock
+from datetime import datetime, timedelta, timezone
 
 # Connect to MongoDB, fallback to in-memory mock if unavailable
 try:
@@ -16,6 +17,7 @@ except Exception:
 db = client['mergington_high']
 activities_collection = db['activities']
 teachers_collection = db['teachers']
+announcements_collection = db['announcements']
 
 # Methods
 
@@ -55,6 +57,17 @@ def init_database():
         for teacher in initial_teachers:
             teachers_collection.insert_one(
                 {"_id": teacher["username"], **teacher})
+
+    # Initialize announcements if empty
+    if announcements_collection.count_documents({}) == 0:
+        for announcement in initial_announcements:
+            announcements_collection.insert_one({
+                "_id": announcement["id"],
+                "message": announcement["message"],
+                "start_date": announcement.get("start_date"),
+                "expiration_date": announcement["expiration_date"],
+                "created_at": announcement["created_at"]
+            })
 
 
 # Initial database if empty
@@ -211,5 +224,15 @@ initial_teachers = [
         "display_name": "Principal Martinez",
         "password": hash_password("admin789"),
         "role": "admin"
+    }
+]
+
+initial_announcements = [
+    {
+        "id": "welcome-registration-window",
+        "message": "Activity registration is open until the end of the month. Don’t lose your spot!",
+        "start_date": None,
+        "expiration_date": (datetime.now(timezone.utc) + timedelta(days=45)).isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat()
     }
 ]
