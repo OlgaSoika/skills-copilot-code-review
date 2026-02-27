@@ -344,12 +344,23 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    announcementBanner.innerHTML = announcements
-      .map(
-        (announcement) =>
-          `<article class="announcement-item"><span class="announcement-icon" aria-hidden="true">📢</span><span>${announcement.message}</span></article>`
-      )
-      .join("");
+    announcementBanner.innerHTML = "";
+    announcements.forEach((announcement) => {
+      const article = document.createElement("article");
+      article.className = "announcement-item";
+
+      const icon = document.createElement("span");
+      icon.className = "announcement-icon";
+      icon.setAttribute("aria-hidden", "true");
+      icon.textContent = "📢";
+
+      const messageSpan = document.createElement("span");
+      messageSpan.textContent = announcement.message;
+
+      article.appendChild(icon);
+      article.appendChild(messageSpan);
+      announcementBanner.appendChild(article);
+    });
   }
 
   async function fetchActiveAnnouncements() {
